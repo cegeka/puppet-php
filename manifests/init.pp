@@ -4,7 +4,9 @@
 #
 # === Parameters
 #
-# No parameters
+# usephp54: false : installs php-pear
+#           true  : install php54-pear
+#
 #
 # === Variables
 #
@@ -22,7 +24,7 @@
 #
 # Copyright 2012-2013 Nodes, unless otherwise noted.
 #
-class php {
+class php ($usephp54 = false) {
 
   include php::params
 
@@ -32,7 +34,13 @@ class php {
     path    => [ '/bin/', '/sbin/' , '/usr/bin/', '/usr/sbin/' ];
   }
 
-  package { 'php-pear':
+  if ($usephp54) {
+    $packagename = php54-pear
+  } else {
+    $packagename = php-pear
+  }
+
+  package { $packagename:
     ensure => $php::params::ensure
   } -> Exec['php::pear::auto_discover']
 

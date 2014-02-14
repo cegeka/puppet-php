@@ -15,6 +15,14 @@ Puppet::Type.type(:package).provide :pear, :parent => Puppet::Provider::Package 
     commands :pearcmd => "pear"
   end
 
+  def initialize(resource = nil)
+    super
+    # change name parameter to lowercase to make it case insensitive
+    if !@resource.nil?
+      @resource[:name] = @resource[:name].downcase
+    end
+  end
+
   def self.pearlist(hash)
     command = [command(:pearcmd), "list", "-a"]
 
@@ -66,7 +74,7 @@ Puppet::Type.type(:package).provide :pear, :parent => Puppet::Provider::Package 
       when /^=/: return nil
       when /^PACKAGE/i: return nil
       when /^(\S+)\s+([.\d]+)\s+(\S+)\s*$/:
-        name = $1
+        name = $1.downcase
         version = $2
         state = $3
         return {
