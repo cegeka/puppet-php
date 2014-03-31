@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>Module: varnish</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href=".././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+    <div id="classHeader">
+        <table class="header-table">
+        <tr class="top-aligned-row">
+          <td><strong>Module</strong></td>
+          <td class="class-name-in-header">varnish</td>
+        </tr>
+        <tr class="top-aligned-row">
+            <td><strong>In:</strong></td>
+            <td>
+                <a href="../files/home/bkfda/gitrepo/public/varnish/manifests/instance_pp.html">
+                /home/bkfda/gitrepo/public/varnish/manifests/instance.pp
+                </a>
+        <br />
+                <a href="../files/home/bkfda/gitrepo/public/varnish/manifests/dispatch-log_pp.html">
+                /home/bkfda/gitrepo/public/varnish/manifests/dispatch-log.pp
+                </a>
+        <br />
+                <a href="../files/home/bkfda/gitrepo/public/varnish/manifests/init_pp.html">
+                /home/bkfda/gitrepo/public/varnish/manifests/init.pp
+                </a>
+        <br />
+            </td>
+        </tr>
+
+        </table>
+    </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+    <div id="description">
+      <h1><a href="puppet.html">puppet</a>-<a href="varnish.html">varnish</a> module</h1>
+<p>
+<a href="https://codex.cegeka.be/jenkins/job/puppet-varnish/"><img
+src='https://codex.cegeka.be/jenkins/job/puppet-varnish/badge/icon' /></a>
+</p>
+<p>
+This is the <a href="varnish.html">varnish</a> module.
+</p>
+
+    </div>
+
+
+   </div>
+
+<!-- if childs -->
+
+    <div id="method-list">
+      <h3 class="section-bar">Defines</h3>
+
+      <div class="name-list">
+      <a href="#M000335">instance</a>&nbsp;&nbsp;
+      </div>
+    </div>
+
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <!-- if requires -->
+
+    <!-- if realizes -->
+
+    <div id="section">
+
+<!-- if facts -->
+
+<!-- if plugins -->
+
+<!-- if nodes -->
+
+<!-- if class -->
+    <div id="class-list">
+      <h3 class="section-bar">Classes and Modules</h3>
+
+      Class <a href="varnish/dispatch-log.html" class="link">varnish::dispatch-log</a><br />
+Class <a href="varnish/varnish.html" class="link">varnish::varnish</a><br />
+
+    </div>
+
+
+
+
+
+
+
+    <!-- if method_list -->
+    <div id="methods">
+      <h3 class="section-bar">Defines</h3>
+
+      <div id="method-M000335" class="method-detail">
+        <a name="M000335"></a>
+
+        <div class="method-heading">
+          <span class="method-name">instance</span><span class="method-args">( $corelimit =&gt; '0', $backend =&gt; 'undef', $nfiles =&gt; '131072', $storage =&gt; [], $admin_address =&gt; 'localhost', $varnishlog =&gt; 'true', $address =&gt; ['&quot;:80&quot;'], $options =&gt; [], $admin_port =&gt; '6082', $cliparams =&gt; 'undef', $memlock =&gt; '82000' )</span>
+        </div>
+
+        <div class="method-description">
+          <h2>Definition: varnish::instance</h2>
+<p>
+Creates a running varnishd <a href="varnish.html#M000335">instance</a> and
+configures it&#8216;s different startup parameters. Optionnally a VCL
+configuration file can be provided. Have a look at <a
+href="http://varnish.projects.linpro.no/wiki/Introduction">varnish.projects.linpro.no/wiki/Introduction</a>
+for more details.
+</p>
+<p>
+Parameters:
+</p>
+<ul>
+<li><b>address</b>: array of ip + port which <a
+href="varnish.html">varnish</a>&#8216;s http service should bindto,
+defaults to all interfaces on port 80.
+
+</li>
+<li><b>admin_address</b>: address of <a href="varnish.html">varnish</a>&#8216;s
+admin console, defaults to localhost.
+
+</li>
+<li><b>admin_port</b>: port of <a href="varnish.html">varnish</a>&#8216;s admin
+console, defaults to 6082.
+
+</li>
+<li><b>backend</b>: location of the backend, in the &quot;address:port&quot;
+format. This is passed to &quot;varnishd -b&quot;. Defaults to none.
+
+</li>
+<li><b>vcl_file</b>: location of the <a
+href="varnish.html#M000335">instance</a>&#8216;s VCL file, located on <a
+href="puppet.html">puppet</a>&#8216;s fileserver (<a
+href="puppet.html">puppet</a>://host/module/path.vcl). This is passed to
+&quot;varnishd -f&quot;. Defaults to none.
+
+</li>
+<li><b>vcl_content</b>: content of the <a
+href="varnish.html#M000335">instance</a>&#8216;s VCL file. Defaults to
+none.
+
+</li>
+<li><b>storage</b>: array of backend &quot;type[,options]&quot; strings to be
+passed to &quot;varnishd -s&quot; since version 2.0 <a
+href="varnish.html">varnish</a> support multiple storage files
+
+</li>
+<li><b>params</b>: array of &quot;key=value&quot; strings to be passed to
+&quot;varnishd -p&quot; (run-time parameters). Defaults to none.
+
+</li>
+<li><b>nfiles</b>: max number of open files (ulimit -n) allocated to varnishd,
+defaults to 131072.
+
+</li>
+<li><b>memlock</b>: max memory lock size (ulimit -l) allocated to varnishd,
+defaults to 82000.
+
+</li>
+<li><b>corelimit</b>: size of coredumps (ulimit -c). Usually
+&quot;unlimited&quot; or 0, defaults to 0.
+
+</li>
+<li><b>varnishlog</b>: whether a varnishlog <a
+href="varnish.html#M000335">instance</a> must be run together with
+varnishd. defaults to true.
+
+</li>
+</ul>
+<p>
+See varnishd(1) and /etc/{default,sysconfig}/<a
+href="varnish.html">varnish</a> for more details.
+</p>
+<p>
+Notes:
+</p>
+<ul>
+<li><a href="varnish.html">varnish</a>&#8216;s configuration will be reloaded
+when it changes, using /usr/local/sbin/vcl-reload.sh
+
+</li>
+</ul>
+<p>
+Requires:
+</p>
+<ul>
+<li>Class[&#8216;<a href="varnish.html">varnish</a>&#8217;]
+
+</li>
+</ul>
+        </div>
+      </div>
+
+
+    </div>
+
+
+    <!-- if resource_list -->
+
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>

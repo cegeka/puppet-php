@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>Class: apache::ssl</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+    <div id="classHeader">
+        <table class="header-table">
+        <tr class="top-aligned-row">
+          <td><strong>Class</strong></td>
+          <td class="class-name-in-header">apache::ssl</td>
+        </tr>
+        <tr class="top-aligned-row">
+            <td><strong>In:</strong></td>
+            <td>
+                <a href="../../files/home/bkfda/gitrepo/public/apache/manifests/ssl_pp.html">
+                /home/bkfda/gitrepo/public/apache/manifests/ssl.pp
+                </a>
+        <br />
+            </td>
+        </tr>
+
+        <tr class="top-aligned-row">
+            <td><strong>Parent:</strong></td>
+            <td>
+                <a href="apache.html">
+                apache
+               </a>
+            </td>
+        </tr>
+        </table>
+    </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+    <div id="description">
+      <h2>Class: <a href="ssl.html">apache::ssl</a></h2>
+<p>
+This class basically does the same thing the &quot;<a
+href="../apache.html">apache</a>&quot; class does + enable mod_ssl.
+</p>
+<p>
+It also drops a little shell script in /usr/local/sbin/generate-<a
+href="ssl.html">ssl</a>-cert.sh, which is used by <a
+href="vhost.html">apache::vhost</a>-<a href="ssl.html">ssl</a> to generate
+an SSL key and certificate. This script calls openssl with /var/www/&lt;<a
+href="vhost.html">vhost</a>&gt;/ssl/ssleay.cnf as a template. The content
+of this file is influenced by a few class variables described below.
+</p>
+<p>
+Class variables:
+</p>
+<ul>
+<li><b>sslcert_country</b>: the content of the &quot;countryName&quot; field in
+generated certificates. Setting this field is mandatory.
+
+</li>
+<li><b>sslcert_state</b>: the content of the &quot;stateOrProvinceName&quot;
+field in generated certificates.
+
+</li>
+<li><b>sslcert_locality</b>: the content of the &quot;localityName&quot; field
+in generated certificates.
+
+</li>
+<li><b>sslcert_organisation</b>: the content of the
+&quot;organizationName&quot; field in generated certificates. Setting this
+field is mandatory.
+
+</li>
+<li><b>sslcert_unit</b>: the content of the &quot;organizationalUnitName&quot;
+field in generated certificates.
+
+</li>
+<li><b>sslcert_email</b>: the content of the &quot;emailAddress&quot; field in
+generated certificates.
+
+</li>
+</ul>
+<p>
+Example usage:
+</p>
+<pre>
+  include apache::ssl
+</pre>
+
+    </div>
+
+
+   </div>
+
+<!-- if childs -->
+
+
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <!-- if requires -->
+
+    <!-- if realizes -->
+
+    <div id="section">
+
+<!-- if facts -->
+
+<!-- if plugins -->
+
+<!-- if nodes -->
+
+<!-- if class -->
+    <div id="class-list">
+      <h3 class="section-bar">Classes and Modules</h3>
+
+      Class <a href="ssl/debian.html" class="link">apache::ssl::debian</a><br />
+Class <a href="ssl/redhat.html" class="link">apache::ssl::redhat</a><br />
+
+    </div>
+
+
+
+
+
+
+
+    <!-- if method_list -->
+
+
+    <!-- if resource_list -->
+
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>

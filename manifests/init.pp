@@ -24,7 +24,7 @@
 #
 # Copyright 2012-2013 Nodes, unless otherwise noted.
 #
-class php ($usephp54 = false) {
+class php ($phpversion=undef) {
 
   include php::params
 
@@ -34,10 +34,11 @@ class php ($usephp54 = false) {
     path    => [ '/bin/', '/sbin/' , '/usr/bin/', '/usr/sbin/' ];
   }
 
-  if ($usephp54) {
-    $packagename = php54-pear
-  } else {
-    $packagename = php-pear
+  case $phpversion {
+    52: { $packagename = php-pear }
+    54: { $packagename = php54-pear }
+    55: { $packagename = php55u-pear }
+    default: { $packagename = php-pear }
   }
 
   package { $packagename:

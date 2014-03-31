@@ -1,0 +1,457 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>Module: users</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href=".././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+    <div id="classHeader">
+        <table class="header-table">
+        <tr class="top-aligned-row">
+          <td><strong>Module</strong></td>
+          <td class="class-name-in-header">users</td>
+        </tr>
+        <tr class="top-aligned-row">
+            <td><strong>In:</strong></td>
+            <td>
+                <a href="../files/home/bkfda/gitrepo/public/users/manifests/localgroup_pp.html">
+                /home/bkfda/gitrepo/public/users/manifests/localgroup.pp
+                </a>
+        <br />
+                <a href="../files/home/bkfda/gitrepo/public/users/manifests/localuser_pp.html">
+                /home/bkfda/gitrepo/public/users/manifests/localuser.pp
+                </a>
+        <br />
+                <a href="../files/home/bkfda/gitrepo/public/users/manifests/init_pp.html">
+                /home/bkfda/gitrepo/public/users/manifests/init.pp
+                </a>
+        <br />
+            </td>
+        </tr>
+
+        </table>
+    </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+    <div id="description">
+      <h1><a href="puppet.html">puppet</a>-<a href="users.html">users</a> module</h1>
+<p>
+<a href="https://codex.cegeka.be/jenkins/job/puppet-users/"><img
+src='https://codex.cegeka.be/jenkins/job/puppet-users/badge/icon' /></a>
+</p>
+<p>
+Use this module to create <a href="users.html">users</a> and/or groups and
+to distribute the public key you normally use to authenticate to a remote
+machine.
+</p>
+<h2>Recommended use</h2>
+<p>
+The definitions in this module are most efficiently used when combined with
+virtual resources, that can be realized when needed:
+</p>
+<pre>
+  class mysite::users {
+    @users::localgroup { 'admins':
+      gid =&gt; '5000'
+    }
+
+    @users::localuser { 'foo':
+      uid        =&gt; '5000',
+      logingroup =&gt; 'admins'
+    }
+
+    @users::localuser { 'bar':
+      uid        =&gt; '5001',
+      logingroup =&gt; 'admins',
+      shell      =&gt; '/bin/ksh'
+    }
+  }
+</pre>
+<p>
+You can now easily realize the virtual <a href="users.html">users</a> as
+you see fit.
+</p>
+<pre>
+  class mysite::myserver {
+    include mysite::users
+
+    realize Users::Localgroup['admins']
+    realize Users::Localuser['foo']
+  }
+</pre>
+<p>
+This enables you to consolidate your <a href="users.html">users</a> and
+still be flexible.
+</p>
+
+    </div>
+
+
+   </div>
+
+<!-- if childs -->
+
+    <div id="method-list">
+      <h3 class="section-bar">Defines</h3>
+
+      <div class="name-list">
+      <a href="#M000789">localgroup</a>&nbsp;&nbsp;
+      <a href="#M000790">localuser</a>&nbsp;&nbsp;
+      </div>
+    </div>
+
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <!-- if requires -->
+
+    <!-- if realizes -->
+
+    <div id="section">
+
+<!-- if facts -->
+
+<!-- if plugins -->
+
+<!-- if nodes -->
+
+<!-- if class -->
+    <div id="class-list">
+      <h3 class="section-bar">Classes and Modules</h3>
+
+      Class <a href="users/users.html" class="link">users::users</a><br />
+
+    </div>
+
+
+
+
+
+
+
+    <!-- if method_list -->
+    <div id="methods">
+      <h3 class="section-bar">Defines</h3>
+
+      <div id="method-M000789" class="method-detail">
+        <a name="M000789"></a>
+
+        <div class="method-heading">
+          <span class="method-name">localgroup</span><span class="method-args">( $gid, $ensure =&gt; 'present' )</span>
+        </div>
+
+        <div class="method-description">
+          <h2>Definition: users::localgroup</h2>
+<p>
+Adds the specified group on the local system.
+</p>
+<h3>Parameters:</h3>
+<dl>
+<dt><b>name</b></dt><dd>The groupname (no default).
+
+<ul>
+<li>Required: yes
+
+</li>
+<li>Content: String
+
+</li>
+</ul>
+</dd>
+<dt><b>gid</b></dt><dd>The numeric id for the group (no default).
+
+<ul>
+<li>Required: yes
+
+</li>
+<li>Content: Integer
+
+</li>
+</ul>
+</dd>
+<dt><b>ensure</b></dt><dd>The desired state for the group (default: &#8216;present&#8217;).
+
+<ul>
+<li>Required: no
+
+</li>
+<li>Content: &#8216;present&#8217; | &#8216;absent&#8216;
+
+</li>
+</ul>
+</dd>
+</dl>
+<h3>Sample Usage:</h3>
+<p>
+Groups can be created using:
+</p>
+<pre>
+  users::localgroup { 'foo':
+    gid =&gt; '10001'
+  }
+</pre>
+<p>
+Existing groups can be removed using:
+</p>
+<pre>
+  users::localgroup { 'foo':
+    ensure =&gt; 'absent',
+    gid    =&gt; '10001'
+  }
+</pre>
+        </div>
+      </div>
+
+      <div id="method-M000790" class="method-detail">
+        <a name="M000790"></a>
+
+        <div class="method-heading">
+          <span class="method-name">localuser</span><span class="method-args">( $home =&gt; '&quot;/home/&quot;$title&quot;&quot;', $logingroup, $sshkeytype =&gt; '', $comment =&gt; '', $ensure =&gt; 'present', $managehome =&gt; 'true', $password =&gt; '!', $shell =&gt; '/bin/bash', $uid, $sshkey =&gt; '', $groups =&gt; [] )</span>
+        </div>
+
+        <div class="method-description">
+          <h2>Definition: users::localuser</h2>
+<p>
+Adds the specified user on the local system, adds a dir bin to the homedir
+and adds a public key to the ~/.ssh/authorized_keys file, if provided.
+</p>
+<h3>Parameters:</h3>
+<dl>
+<dt><b>name</b></dt><dd>The username (no default).
+
+<ul>
+<li>Required: yes
+
+</li>
+<li>Content: String
+
+</li>
+</ul>
+</dd>
+<dt><b>uid</b></dt><dd>The numeric id for the user (no default).
+
+<ul>
+<li>Required: yes
+
+</li>
+<li>Content: Integer
+
+</li>
+</ul>
+</dd>
+<dt><b>logingroup</b></dt><dd>The primary group for the user (no default).
+
+<ul>
+<li>Required: yes
+
+</li>
+<li>Content: String
+
+</li>
+</ul>
+</dd>
+<dt><b>groups</b></dt><dd>The auxiliary groups the user belongs to (default: []).
+
+<ul>
+<li>Required: no
+
+</li>
+<li>Content: Array of Strings
+
+</li>
+</ul>
+</dd>
+<dt><b>password</b></dt><dd>The hashed password string, defaults to &quot;locked&quot; (default:
+&#8217;!&#8217;).
+
+<ul>
+<li>Required: no
+
+</li>
+<li>Content: String
+
+</li>
+</ul>
+</dd>
+<dt><b>comment</b></dt><dd>The GECOS field associated with this user (default: &#8217;&#8217;).
+
+<ul>
+<li>Required: no
+
+</li>
+<li>Content: String
+
+</li>
+</ul>
+</dd>
+<dt><b>sshkey</b></dt><dd>The public key to be copied to ~/.ssh/authorized_keys (no default).
+
+<ul>
+<li>Required: no
+
+</li>
+<li>Content: String
+
+</li>
+</ul>
+</dd>
+<dt><b>sshkeytype</b></dt><dd>The ssh key encryption type: ssh-dsa/ssh-rsa (no default)
+
+<ul>
+<li>required: yes
+
+</li>
+<li>content: String
+
+</li>
+</ul>
+</dd>
+<dt><b>ensure</b></dt><dd>The desired state for the user (default: &#8216;present&#8217;).
+
+<ul>
+<li>Required: no
+
+</li>
+<li>Content: &#8216;present&#8217; | &#8216;absent&#8216;
+
+</li>
+</ul>
+</dd>
+<dt><b>managehome</b></dt><dd>Should the home directory be created automatically (default: true).
+
+<ul>
+<li>Required: no
+
+</li>
+<li>Content: Boolean
+
+</li>
+</ul>
+</dd>
+<dt><b>home</b></dt><dd>The home directory for the user (default: &#8217;/home/${name}&#8217;).
+
+<ul>
+<li>Required: no
+
+</li>
+<li>Content: String
+
+</li>
+</ul>
+</dd>
+<dt><b>shell</b></dt><dd>The login shell for the user (default: &#8217;/bin/bash&#8217;).
+
+<ul>
+<li>Required: no
+
+</li>
+<li>Content: String
+
+</li>
+</ul>
+</dd>
+</dl>
+<h3>Requires:</h3>
+<pre>
+  Group[$logingroup]
+</pre>
+<h3>Sample Usage:</h3>
+<p>
+Users can be created using:
+</p>
+<pre>
+  users::localuser { 'foo':
+    uid        =&gt; '10001',
+    logingroup =&gt; 'testgrp'
+  }
+
+  users::localuser { 'bar':
+    uid        =&gt; '10002',
+    logingroup =&gt; 'testgrp',
+    password   =&gt; '$1$64hp6Ust$DGjSKcEXwmSZ4BTQe9idH0',
+    sshkey     =&gt; 'AAAAB3NzaC1yc2EAAAABIwAAAQEA0mBONiRaPTqTaKfA1l==',
+    type       =&gt; 'ssh-rsa',
+    groups     =&gt; [ 'testgrp1', 'testgrp2'],
+    shell      =&gt; '/bin/ksh'
+  }
+</pre>
+<p>
+Existing <a href="users.html">users</a> can be removed using:
+</p>
+<pre>
+  users::localuser { 'foo':
+    ensure     =&gt; 'absent',
+    uid        =&gt; '10001',
+    logingroup =&gt; 'testgrp'
+  }
+</pre>
+        </div>
+      </div>
+
+
+    </div>
+
+
+    <!-- if resource_list -->
+
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>
