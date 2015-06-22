@@ -69,11 +69,11 @@ Puppet::Type.type(:package).provide :pear, :parent => Puppet::Provider::Package 
     end
 
     case desc
-      when /^$/: return nil
-      when /^INSTALLED/i: return nil
-      when /^=/: return nil
-      when /^PACKAGE/i: return nil
-      when /^(\S+)\s+([.\d]+)\s+(\S+)\s*$/:
+      when /^$/ then return nil
+      when /^INSTALLED/i then return nil
+      when /^=/ then return nil
+      when /^PACKAGE/i then return nil
+      when /^(\S+)\s+([.\d]+)\s+(\S+)\s*$/ then
         name = $1.downcase
         version = $2
         state = $3
