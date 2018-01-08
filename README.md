@@ -176,3 +176,4 @@ The following PHP related packages come build in too
 
 * Composer (php::composer)
 * phpunit (php::phpunit)
+
