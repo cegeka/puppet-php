@@ -1,53 +1,46 @@
-# == Class: php::dev
-#
-# PHP dev package
-#
-# Install the development headers for PHP
+# Install the development package with headers for PHP
 #
 # === Parameters
-#
-# No parameters
-#
-# === Variables
 #
 # [*ensure*]
 #   The PHP ensure of PHP dev to install
 #
 # [*package*]
-#   The package name for PHP dev
-#   For debian it's php5-dev
-#
-# [*provider*]
-#   The provider used to install php5-dev
-#   Could be "pecl", "apt" or any other OS package provider
-#
-# === Examples
-#
-#  include php::dev
-#
-# === Authors
-#
-# Christian Winther <cw@nodes.dk>
-#
-# === Copyright
-#
-# Copyright 2012-2013 Nodes, unless otherwise noted.
+#   The package name for the PHP development files
 #
 class php::dev(
-  $ensure   = $php::dev::params::ensure,
-  $package  = $php::dev::params::package,
-  $provider = $php::dev::params::provider
-) {
-  include php::dev::params
+  $ensure  = $::php::ensure,
+  $package = "${::php::package_prefix}${::php::params::dev_package_suffix}",
+) inherits ::php::params {
 
-  php::contrib::base_package { 'dev':
-    ensure    => $ensure,
-    provider  => $provider;
+  if $caller_module_name != $module_name {
+    warning('php::dev is private')
   }
 
-  package { $package:
-    ensure    => $ensure,
-    provider  => $provider;
+  validate_string($ensure)
+  validate_string($package)
+
+  # On FreeBSD there is no 'devel' package.
+  $real_package = $::osfamily ? {
+    'FreeBSD' => [],
+    default   => $package,
   }
 
+  # Default PHP come with xml module and no seperate package for it
+  if $::operatingsystem == 'Ubuntu' and versioncmp($::operatingsystemrelease, '16.04') >= 0  {
+    ensure_packages(["${php::package_prefix}xml"], {
+      ensure  => present,
+      require => Class['::apt::update'],
+    })
+
+    package { $real_package:
+      ensure  => $ensure,
+      require => Class['::php::packages'],
+    }
+  } else {
+    package { $real_package:
+      ensure  => $ensure,
+      require => Class['::php::packages'],
+    }
+  }
 }

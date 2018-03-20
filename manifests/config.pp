@@ -1,42 +1,35 @@
-# == Class: php::config
-#
 # Configure php.ini settings for a PHP SAPI
 #
 # === Parameters
 #
-# [*key*]
-#   The php.ini settings key
+# [*file*]
+#   The path to ini file
 #
-# [*value*]
-#   The php.ini setting value
-#
-# [*sapi*]
-#   The PHP sapi (cli or apache2)
-#
-# === Variables
-#
-# No variables
+# [*config*]
+#   Nested hash of key => value to apply to php.ini
 #
 # === Examples
 #
-#  php::config { "sample": key => 'PHP/short_open_tag', value => 'Off', 'sapi' => 'cli'; }
-#
-# === Authors
-#
-# Christian Winther <cw@nodes.dk>
-#
-# === Copyright
-#
-# Copyright 2012-2013 Nodes, unless otherwise noted.
+#   php::config { '$unique-name':
+#     file  => '$full_path_to_ini_file'
+#     config => {
+#       {'Date/date.timezone' => 'Europe/Berlin'}
+#     }
+#   }
 #
 define php::config(
-  $inifile,
-  $settings
+  $file,
+  $config
 ) {
 
-  augeas { "php-${name}-config":
-    context => "/files${inifile}",
-    changes => template('php/augeas_commands.erb')
+  if $caller_module_name != $module_name {
+    warning('php::config is private')
   }
 
+  validate_absolute_path($file)
+  validate_hash($config)
+
+  create_resources(::php::config::setting, to_hash_settings($config, $file), {
+    file => $file
+  })
 }

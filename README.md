@@ -1,179 +1,273 @@
-puppet-php
-==========
+[![Puppet Forge](http://img.shields.io/puppetforge/v/voxpupuli/php.svg)](https://forge.puppetlabs.com/voxpupuli/php)
+[![Build Status](https://travis-ci.org/voxpupuli/puppet-php.svg?branch=master)](https://travis-ci.org/voxpupuli/puppet-php)
 
-Puppet module to manage PHP on debian using dotdeb apt repository
+## Current Status
+As the original creators of `puppet-php` are no longer maintaining the module, it has been handed over into the care of Vox Pupuli.
+Please be sure to update all your links to the new location.
 
-Right now only supports dotdeb on debian squeeze, should be fairly easy to modify if needed though
+# voxpupuli/php Puppet Module
 
-Puppet forge URL: http://forge.puppetlabs.com/nodes/php
+voxpupuli/php is a Puppet module for managing PHP with a strong focus
+on php-fpm. The module aims to use sane defaults for the supported
+architectures. We strive to support all recent versions of Debian,
+Ubuntu, RedHat/CentOS, openSUSE/SLES and FreeBSD. Managing Apache
+with `mod_php` is not supported.
 
-### Installation
+This originally was a fork of [jippi/puppet-php](https://github.com/jippi/puppet-php)
+(nodes-php on Puppet Forge) but has since been rewritten in large parts.
 
-```
-puppet module install nodes/php
-```
+## Usage
 
-or simply clone the repository in your `module_path` (the folder must be named **php**)
+Quickest way to get started is simply `include`'ing the _`php` class_.
 
-### Setup
-
-There is little to no class dependency between all classes
-
-To ensure that things happen in a predictable order please use the example below to ensure that extensions are installed before they are configured
-
-```
-# Install extensions; Configure extensions; Reload apache if changed
-Php::Extension <| |> -> Php::Config <| |> ~> Service["apache2"]
+```puppet
+include '::php'
 ```
 
-If you rely on `dotdeb` (default behavior) you also want to make sure that the `php::apt` class is loaded and `apt` has been updated (`apt-get update`) before packages are installed
+Or, you can override defaults and specify additional custom
+configurations by declaring `class { '::php': }` with parameters:
 
-```
-# Install sources; Update sources; Install packages
-Apt::Source <| |> ~> Exec['apt_update'] -> Package <| |>
-```
-
-Using the Pecl package provider requires the `php5-dev` and `build-essential` package to be installed beforehand
-
-### Example configuration of the module.
-
-It will install CLI, mod_php for apache, dev packages, pear and APC
-
-```
-$php_version = '5.4.11-1~dotdeb.0'
-
-include php
-include php::apt
-
-class {
-  'php::cli':
-    ensure => $php_version;
-  'php::apache':
-    ensure => $php_version;
-  'php::dev':
-    ensure => $php_version;
-  'php::pear':
-    ensure => $php_version;
-  'php::extension::apc':
-    ensure => $php_version;
+```puppet
+class { '::php':
+  ensure       => latest,
+  manage_repos => true,
+  fpm          => true,
+  dev          => true,
+  composer     => true,
+  pear         => true,
+  phpunit      => false,
 }
 ```
 
-### Package providers
+Optionally the PHP version or configuration root directory can be changed also:
 
-The module provides a `pear` and `pecl` provider
-
-#### Pear package example
-
-```
-package { 'pear.phpunit.de/PHPUnit':
-	ensure 	 => installed,
-	provider => pear;
+```puppet
+class { '::php::globals':
+  php_version => '7.0',
+  config_root => '/etc/php/7.0',
+}->
+class { '::php':
+  manage_repos => true
 }
 ```
 
-#### Pecl package example
+There are more configuration options available. Please refer to the
+auto-generated documentation at http://php.puppet.mayflower.de/.
 
-```
-package { 'igbinary':
-	ensure   => installed,
-	provider => pecl;
-}
-```
+### Defining `php.ini` settings
 
-### Installing packages
+PHP configuration parameters in `php.ini` files can be defined as parameter
+`settings` on the main `php` class, or `php::fpm` / `php::cli` classes,
+or `php::extension` resources for each component independently.
 
-It's quite simple to install packages not included in the package, simply use `php::extension`
+These settings are written into their respective `php.ini` file. Global
+settings in `php::settings` are merged with the settings of all components.
+Please note that settings of extensions are always independent.
 
-```
-php::extension { 'platform-independent-name':
-  ensure   => $ensure,		# Same as Package { ensure }
-  package  => $package,		# Package name as defined in the package provider
-  provider => $provider;	# Provider used to install (pecl, pearl, (default)undef)
-}
+In the following example the PHP options and timezone will be set in
+all PHP configurations, i.e. the PHP cli application and all php-fpm pools.
 
-# same as
-
-package { $package:			# Package name as defined in the package provider
-	ensure   => $ensure,	# Same as Package { ensure }
-	provider => $provider;	# Provider used to install (pecl, pearl, (default)undef)
-}
-```
-
-The advantage of using `php::extension` over `package` is the anchor of dependency mentioned in **Setup**
-
-Packages from a custom `pear` channel is also supported nicely
-
-```
-package { 'pear.phpunit.de/PHPUnit':
-	ensure   => '3.7.12', # Same as Package { ensure }
-	provider => pear,
-	require  => Exec['php::pear::auto_discover'];
-}
+```puppet
+  class { '::php':
+    settings   => {
+      'PHP/max_execution_time'  => '90',
+      'PHP/max_input_time'      => '300',
+      'PHP/memory_limit'        => '64M',
+      'PHP/post_max_size'       => '32M',
+      'PHP/upload_max_filesize' => '32M',
+      'Date/date.timezone'      => 'Europe/Berlin',
+    },
+  }
 ```
 
-If you want to auto-discover channels, make sure to `require` `Exec['php::pear::auto_discover']`
+### Installing extensions
 
-### Configure packages
+PHP configuration parameters in `php.ini` files can be defined
+as parameter `extensions` on the main `php` class. They are
+activated for all activated SAPIs.
 
-Modifying php configuration is also baked right now
+```puppet
+  class { '::php':
+    extensions => {
+      bcmath    => { },
+      imagick   => {
+        provider => pecl,
+      },
+      xmlrpc    => { },
+      memcached => {
+        provider        => 'pecl',
+        header_packages => [ 'libmemcached-devel', ],
+      },
+      apc       => {
+        provider => 'pecl',
+        settings => {
+          'apc/stat'       => '1',
+          'apc/stat_ctime' => '1',
+        },
+        sapi     => 'fpm',
+      },
+    },
+  }
+```
 
-Simply use `php::config` to modify your ini files
+See [the documentation](http://php.puppet.mayflower.de/php/extension.html)
+of the `php::extension` resource for all available parameters and default
+values.
+
+### Defining php-fpm pools
+
+If different php-fpm pools are required, you can use `php::fpm::pool`
+defined resource type. A single pool called `www` will be configured
+by default. Specify additional pools like so:
+
+```puppet
+  php::fpm::pool { 'www2':
+    listen => '127.0.1.1:9000',
+  }
+```
+
+For an overview of all possible parameters for `php::fpm::pool` resources
+please see [its documention](http://php.puppet.mayflower.de/php/fpm/pool.html).
+
+### Alternative examples using Hiera
+Alternative to the Puppet DSL code examples above, you may optionally define your PHP configuration using Hiera.
+
+Below are all the examples you see above, but defined in YAML format for use with Hiera.
+
+```yaml
+---
+php::ensure: latest
+php::manage_repos: true
+php::fpm: true
+php::dev: true
+php::composer: true
+php::pear: true
+php::phpunit: false
+php::settings:
+  'PHP/max_execution_time': '90'
+  'PHP/max_input_time': '300'
+  'PHP/memory_limit': '64M'
+  'PHP/post_max_size': '32M'
+  'PHP/upload_max_filesize': '32M'
+  'Date/date.timezone': 'Europe/Berlin'
+php::extensions:
+  bcmath: {}
+  xmlrpc: {}
+  imagick:
+    provider: pecl
+  memcached:
+    provider: pecl
+    header_packages:
+      - libmemcached-dev
+  apc:
+    provider: pecl
+    settings:
+      'apc/stat': 1
+      'apc/stat_ctime': 1
+    sapi: 'fpm'
+php::fpm::pools:
+  www2:
+    listen: '127.0.1.1:9000'
+```
+
+## Notes
+
+### Debian squeeze & Ubuntu precise come with PHP 5.3
+
+On Debian-based systems, we use `php5enmod` to enable extension-specific
+configuration. This script is only present in `php5` packages beginning with
+version 5.4. Furthermore, PHP 5.3 is not supported by upstream anymore.
+
+We strongly suggest you use a recent PHP version, even if you're using an
+older though still supported distribution release. Our default is to have
+`php::manage_repos` enabled to add apt sources for
+[Dotdeb](http://www.dotdeb.org/) on Debian and
+[ppa:ondrej/php5](https://launchpad.net/~ondrej/+archive/ubuntu/php5/) on
+Ubuntu with packages for the current stable PHP version closely tracking
+upstream.
+
+### Ubuntu systems and Ondřej's PPA
+
+The older Ubuntu PPAs run by Ondřej have been deprecated (ondrej/php5, ondrej/php5.6)
+in favor of a new PPA: ondrej/php which contains all 3 versions of PHP: 5.5, 5.6, and 7.0
+Here's an example in hiera of getting PHP 5.6 installed with php-fpm, pear/pecl, and composer:
 
 ```
-php::config { '$unique-name':
- 	inifile  => '$full_path_to_ini_file'
-	settings => {
-		set => {
-			'.anon/apc.enabled' => 1
-		}
-	}
-}
-
-# same as
-
-augeas { "php-${uniqie-name}-config":
-	context => "/files${full_path_to_ini_file}",
-	changes => {
-		"set '.anon/apc.enabled' '1'"
-	}
-}
+php::globals::php_version: '5.6'
+php::fpm: true
+php::dev: true
+php::composer: true
+php::pear: true
+php::phpunit: false
 ```
 
-`settings` is a key / value `augeas` hash
+If you do not specify a php version, in Ubuntu the default will be 7.0 if you are
+running Xenial (16.04), otherwise PHP 5.6 will be installed (for other versions)
 
-Currently `settings` only support the type `set` in augeas
+### Apache support
 
-The advantage of using `php::config` over `augeas` is the anchor of dependency mentioned in **Setup**
+Apache with `mod_php` is not supported by this module. Please use
+[puppetlabs/apache](https://forge.puppetlabs.com/puppetlabs/apache) instead.
 
-### PHP SAPIs
+We prefer using php-fpm. You can find an example Apache vhost in
+`manifests/apache_vhost.pp` that shows you how to use `mod_proxy_fcgi` to
+connect to php-fpm.
 
-By default the module comes with support for mod_php (`php::apache`) and cli `php::cli`
+### Facts
 
-### PHP modules
+We deliver a `phpversion` fact with this module. This is explicitly **NOT** intended
+to be used within your puppet manifests as it will only work on your second puppet
+run. Its intention is to make querying PHP versions per server easy via PuppetDB or Foreman.
 
-The following modules are implemented by default:
+### FreeBSD support
 
-* apc (php::extension::apc)
-* curl (php::extension::curl)
-* gd (php::extension::gd)
-* gearman (php::extension::gearman)
-* http (php::extension::http)
-* igbinary (php::extension::igbinary)
-* imagick (php::extension::imagick)
-* mcrypt (php::extension::mcrypt)
-* mysql (php::extension::mysql)
-* redis (php::extension::redis)
-* ssh2 (php::extension::ssh2)
-* uploadprogress (php::extension::uploadprogress)
-* xdebug (php::extension::xdebug)
+On FreeBSD systems we purge the system-wide `extensions.ini` in favour of
+per-module configuration files.
 
-each of them are located in the `php::extension` namespace
+Please also note that support for Composer and PHPUnit on FreeBSD is untested
+and thus likely incomplete.
 
-### Packages
+### Running the test suite
 
-The following PHP related packages come build in too
+To run the tests install the ruby dependencies with `bundler` and execute
+`rake`:
 
+```
+bundle install --path vendor/bundle
+bundle exec rake
+```
+
+## Bugs & New Features
+
+If you happen to stumble upon a bug, please feel free to create a pull request
+with a fix (optionally with a test), and a description of the bug and how it
+was resolved.
+
+Or if you're not into coding, simply create an issue adding steps to let us
+reproduce the bug and we will happily fix it.
+
+If you have a good idea for a feature or how to improve this module in general,
+please create an issue to discuss it. We are very open to feedback. Pull
+requests are always welcome.
+
+We hate orphaned and unmaintained Puppet modules as much as you do and
+therefore promise that we will continue to maintain this module and keep
+response times to issues short. If we happen to lose interest, we will write
+a big fat warning into this README to let you know.
+
+## License
+
+The project is released under the permissive MIT license.
+
+The source can be found at
+[github.com/voxpupuli/puppet-php](https://github.com/voxpupuli/puppet-php/).
+
+<<<<<<< HEAD
 * Composer (php::composer)
 * phpunit (php::phpunit)
 
+=======
+This Puppet module was originally maintained by some fellow puppeteers at
+[Mayflower GmbH](https://mayflower.de) and is now maintained by
+[Vox Pupuli](https://voxpupuli.org/).
+>>>>>>> puppet-php/master
