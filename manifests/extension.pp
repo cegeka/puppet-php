@@ -187,10 +187,12 @@ define php::extension (
   }
 
   $config_root_ini = pick_default($::php::config_root_ini, $::php::params::config_root_ini)
-  ::php::config { $title:
-    file    => "${config_root_ini}/${lowercase_title}.ini",
-    config  => $final_settings,
-    require => $package_depends,
+  if $::osfamily != 'RedHat' { # RedHat packages already include an ini file to enable the extension
+    ::php::config { $title:
+      file    => "${config_root_ini}/${lowercase_title}.ini",
+      config  => $final_settings,
+      require => $package_depends,
+    }
   }
 
   # Ubuntu/Debian systems use the mods-available folder. We need to enable
