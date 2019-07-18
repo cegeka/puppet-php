@@ -20,7 +20,7 @@ class php::apache_config(
   validate_absolute_path($inifile)
   validate_hash($settings)
 
-  $real_settings = deep_merge($settings, hiera_hash('php::apache::settings', {}))
+  $real_settings = deep_merge($settings, lookup({ 'name' =>'php::apache::settings', 'default_value' => {} , merge => hash }))
 
   ::php::config { 'apache':
     file   => $inifile,

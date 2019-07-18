@@ -31,7 +31,7 @@ class php::embedded(
 
   $real_settings = deep_merge(
     $settings,
-    hiera_hash('php::embedded::settings', {})
+    lookup({ 'name' =>'php::embedded::settings', 'default_value' => {} , merge => hash })
   )
 
   $real_package = $::osfamily ? {

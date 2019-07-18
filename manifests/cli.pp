@@ -20,7 +20,7 @@ class php::cli(
   validate_absolute_path($inifile)
   validate_hash($settings)
 
-  $real_settings = deep_merge($settings, hiera_hash('php::cli::settings', {}))
+  $real_settings = deep_merge($settings, lookup({ 'name' =>'php::cli::settings', 'default_value' => {} , merge => hash }))
 
   ::php::config { 'cli':
     file   => $inifile,
